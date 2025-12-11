@@ -19,7 +19,8 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     hashed_pw = auth.hash_password(user.password)
-    new_user = models.User(email=user.email, hashed_password=hashed_pw)
+    new_user = models.User(name=user.name, email=user.email, hashed_password=hashed_pw)
+
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -27,7 +28,7 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return {"message": "User created", "user": new_user.email}
 
 @router.post("/login")
-def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
+def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
     user_in_db = db.query(models.User).filter(models.User.email == user.email).first()
 
     if not user_in_db:
@@ -38,4 +39,6 @@ def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
     token = auth.create_token({"id": user_in_db.id, "email": user.email})
 
+
     return {"access_token": token, "token_type": "bearer"}
+

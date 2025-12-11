@@ -1,20 +1,10 @@
-from passlib.context import CryptContext
-from jose import jwt
-import datetime
-
-SECRET_KEY = "secretkey123"
-ALGORITHM = "HS256"
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# auth.py
 
 def hash_password(password: str):
-    return pwd_context.hash(password)
+    return password   # NO HASHING
 
-def verify_password(plain, hashed):
-    return pwd_context.verify(plain, hashed)
+def verify_password(plain: str, stored: str):
+    return plain == stored   # SIMPLE CHECK
 
 def create_token(data: dict):
-    to_encode = data.copy()
-    expire = datetime.datetime.utcnow() + datetime.timedelta(days=7)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return "dummy-token"
